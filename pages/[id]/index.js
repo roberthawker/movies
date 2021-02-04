@@ -2,54 +2,33 @@ import { useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import dbConnect from '../../utils/dbConnect'
-import Pet from '../../models/Pet'
+import Movie from '../../models/Movie'
 
 /* Allows you to view pet card info and delete pet card*/
-const PetPage = ({ pet }) => {
+const MoviePage = ({ movie }) => {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const handleDelete = async () => {
-    const petID = router.query.id
+    const movieID = router.query.id
 
     try {
-      await fetch(`/api/pets/${petID}`, {
+      await fetch(`/api/movies/${movieID}`, {
         method: 'Delete',
       })
       router.push('/')
     } catch (error) {
-      setMessage('Failed to delete the pet.')
+      setMessage('Failed to delete the movie.')
     }
   }
 
   return (
-    <div key={pet._id}>
+    <div key={movie._id}>
       <div className="card">
-        <img src={pet.image_url} />
-        <h5 className="pet-name">{pet.name}</h5>
+        <img src={movie.poster} />
+        <h5 className="movie-name">{movie.title}</h5>
         <div className="main-content">
-          <p className="pet-name">{pet.name}</p>
-          <p className="owner">Owner: {pet.owner_name}</p>
-
-          {/* Extra Pet Info: Likes and Dislikes */}
-          <div className="likes info">
-            <p className="label">Likes</p>
-            <ul>
-              {pet.likes.map((data, index) => (
-                <li key={index}>{data} </li>
-              ))}
-            </ul>
-          </div>
-          <div className="dislikes info">
-            <p className="label">Dislikes</p>
-            <ul>
-              {pet.dislikes.map((data, index) => (
-                <li key={index}>{data} </li>
-              ))}
-            </ul>
-          </div>
-
           <div className="btn-container">
-            <Link href="/[id]/edit" as={`/${pet._id}/edit`}>
+            <Link href="/[id]/edit" as={`/${movie._id}/edit`}>
               <button className="btn edit">Edit</button>
             </Link>
             <button className="btn delete" onClick={handleDelete}>
@@ -66,10 +45,10 @@ const PetPage = ({ pet }) => {
 export async function getServerSideProps({ params }) {
   await dbConnect()
 
-  const pet = await Pet.findById(params.id).lean()
-  pet._id = pet._id.toString()
+  const movie = await Movie.findById(params.id).lean()
+  movie._id = movie._id.toString()
 
-  return { props: { pet } }
+  return { props: { movie } }
 }
 
-export default PetPage
+export default MoviePage
